@@ -50,3 +50,5 @@ rsconnect/
 Archive/code/*.rds
 code2/*.rds
 *.rds
+Archive/
+result/Archive
