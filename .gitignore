@@ -52,3 +52,4 @@ code2/*.rds
 *.rds
 Archive/
 result/Archive
+code2/py_data/
