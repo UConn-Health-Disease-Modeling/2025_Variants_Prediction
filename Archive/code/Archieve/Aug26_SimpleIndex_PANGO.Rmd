@@ -1,0 +1,243 @@
+---
+title: "Aug26_SimpleIndex_PANGO"
+author: "Franky Zhang"
+date: "2024-08-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(ggplot2)
+library(openxlsx)
+library(RColorBrewer)
+
+source('../Background/functions_0706.R')
+source('../Code/functions_franky_0725.R')
+source('../Background/growth_rate_function_original.R')
+
+generate_growth_rate_list <- function(df) {
+  
+  # Function to process growth rates for a given column
+  process_growth_rates <- function(data, column_name) {
+    output_ <- extract_growth_rates(data[[column_name]], data$date, dow = "none", denominator = 3)
+    list(
+      fit = output_$model_fit %>% 
+        dplyr::select(Date_numeric, date, full_fit) %>% 
+        dplyr::rename(!!paste0(column_name, "_fit") := full_fit),
+      gr_fit = output_$fitted_rates %>% 
+        dplyr::select(Date_numeric, date, rate) %>% 
+        dplyr::rename(!!paste0(column_name, "_gr_fit") := rate)
+    )
+  }
+  
+  # Initialize the output list
+  list_ <- list()
+  
+  # Loop over each variant and process data
+  for (variant_ in unique(df$classified_label)) {
+    
+    cat("processing-", variant_, "\n")
+    
+    variant_df_ <- df %>% 
+      dplyr::filter(classified_label == variant_)
+    
+    # Process 'numerator' and 'sharing' columns
+    abs_data <- process_growth_rates(variant_df_, "numerator")
+    share_data <- process_growth_rates(variant_df_, "sharing")
+    
+    # Combine the results
+    output_ <- abs_data$fit %>% 
+      dplyr::left_join(abs_data$gr_fit, by = c("Date_numeric", "date")) %>% 
+      dplyr::left_join(share_data$fit, by = c("Date_numeric", "date")) %>% 
+      dplyr::left_join(share_data$gr_fit, by = c("Date_numeric", "date"))
+    
+    # Store the raw data and the fitted output in the list
+    list_[[variant_]] <- list(
+      raw = variant_df_,
+      fit = output_
+    )
+  }
+  
+  # Return the final list
+  return(list_)
+}
+
+rates_generating <- function(df, Days){
+  
+  df_30_ <- df %>% 
+  dplyr::filter(
+    gap <= Days
+  ) %>% 
+  dplyr::group_by(
+    classified_label
+  ) %>%
+  dplyr::filter(
+    sum(sharing == 0) <= (Days*0.9) # at least 10% non-zero data
+  ) %>%
+  dplyr::ungroup()
+  
+  return(generate_growth_rate_list(df_30_))
+  
+}
+
+correlation_pvalues_calculate <- function(df, response, start, end, step_size = 1){
+  
+  # start = 30; end = 40; step_size = 2; df = Korea_data; response = Korea_dominance # test inputs
+  
+  type_ <- c("mean_raw_abs", "mean_raw_share", "mean_fit_abs", "mean_fit_abs_gr", "mean_fit_share", "mean_fit_share_gr", 
+               "max_raw_abs", "max_raw_share", "max_fit_abs", "max_fit_abs_gr", "max_fit_share", "max_fit_share_gr")
+  
+  corr_df <- data.frame(Type = type_)
+  p_value_df <- data.frame(Type = type_)
+  
+  for (d in seq(from = start, to = end, by = step_size)) {
+    
+    # d = 30 # test input 
+    
+    cat("Day-", d, "\n")
+    
+    list_ <- rates_generating(df, Days = d)
+    
+    dominance_ <- response %>% 
+      dplyr::filter(
+        classified_label %in% names(list_)
+      ) %>% 
+      dplyr::mutate(
+        classified_label = factor(classified_label, levels = names(list_))
+      ) %>% 
+      dplyr::arrange(
+        classified_label
+      )
+    
+    # all(dominance_$classified_label == names(list_)) # check the order
+    
+    mean_raw_abs <- c()
+    mean_raw_share <- c()
+    mean_fit_abs <- c()
+    mean_fit_abs_gr <- c()
+    mean_fit_share <- c()
+    mean_fit_share_gr <- c()
+    
+    max_raw_abs <- c()
+    max_raw_share <- c()
+    max_fit_abs <- c()
+    max_fit_abs_gr <- c()
+    max_fit_share <- c()
+    max_fit_share_gr <- c()
+    
+    for (i in 1:length(names(list_))) {
+      
+      # i = 10 # test input
+      
+      name = names(list_)[i]
+      
+      raw_ <- list_[[name]]$raw
+      fit_ <- list_[[name]]$fit
+      
+      mean_raw_abs[i] <- mean(raw_$numerator)
+      mean_raw_share[i] <- mean(raw_$sharing)
+      mean_fit_abs[i] <- mean(fit_$numerator_fit)
+      mean_fit_abs_gr[i] <- mean(fit_$numerator_gr_fit)
+      mean_fit_share[i] <- mean(fit_$sharing_fit)
+      mean_fit_share_gr[i] <- mean(fit_$sharing_gr_fit)
+      
+      max_raw_abs[i] <- max(raw_$numerator)
+      max_raw_share[i] <- max(raw_$sharing)
+      max_fit_abs[i] <- max(fit_$numerator_fit)
+      max_fit_abs_gr[i] <- max(fit_$numerator_gr_fit)
+      max_fit_share[i] <- max(fit_$sharing_fit)
+      max_fit_share_gr[i] <- max(fit_$sharing_gr_fit)
+      
+    }
+    
+    cal_list_ <- list(mean_raw_abs, mean_raw_share, mean_fit_abs, mean_fit_abs_gr, mean_fit_share, mean_fit_share_gr, 
+                      max_raw_abs, max_raw_share, max_fit_abs, max_fit_abs_gr, max_fit_share, max_fit_share_gr)
+    
+    names(cal_list_) <- type_
+    
+    cor_ <- c()
+    
+    p_values <- c()
+    
+    for (j in 1:length(type_)) {
+      
+      # j = 1 # test input 
+      
+      type <- type_[j]
+      
+      cor_[j] <- cor.test(cal_list_[[type]], dominance_$dominance)$estimate
+      
+      p_values[j] <- cor.test(cal_list_[[type]], dominance_$dominance)$p.value
+      
+    } 
+    
+    corr_df <- cbind(corr_df, cor_)
+    p_value_df <- cbind(p_value_df, p_values)
+    
+  }
+    
+  colnames(corr_df) <- c("Type", paste0(seq(from = start, to = end, by = step_size), "_days"))
+  colnames(p_value_df) <- c("Type", paste0(seq(from = start, to = end, by = step_size), "_days"))
+  
+  return(list(corr = corr_df, p.value = p_value_df))
+}
+```
+
+```{r}
+# get the alias
+alias_list <- get_alias()
+
+# set the time range (as large as possible)
+months_from_most_recent <- 365 * 6
+
+# load the data and process 
+url <- '../Data/summary_gisaid_new.csv'
+data <- readr::read_csv(url) |>
+  dplyr::filter(
+    # country == country_select,
+    lineage != 'Unassigned',
+    date >= max(date, na.rm = T) - months_from_most_recent
+  ) |>
+  dplyr::mutate(
+    alias = gsub(
+      pattern = "[^a-zA-Z]",
+      replacement = "",
+      x = lineage
+    ),
+    second_part = gsub(pattern = "[a-zA-Z]",
+                       replacement = "",
+                       x = lineage)
+  ) |>
+  dplyr::left_join(alias_list) |>
+  dplyr::mutate(
+    unaliased_lineage  =
+      dplyr::if_else(!is.na(alias_lineage),
+                     paste0(alias_lineage, second_part),
+                     lineage),
+  )
+
+dataset <- data %>%
+  dplyr::select(country, date, lineage, numerator, unaliased_lineage) %>%
+  dplyr::rename(n = numerator)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
