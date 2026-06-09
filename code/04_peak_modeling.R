@@ -76,6 +76,7 @@ run_superlearner_binary_dual <- function(feat_data,
                                          measurements,
                                          learners = c("SL.glm", "SL.glmnet", "SL.randomForest", "SL.xgboost"),
                                          seed = 123,
+                                         train_fraction = 0.5,
                                          cutoff = 0.5) {
   library(dplyr)
   library(SuperLearner)
@@ -90,29 +91,43 @@ run_superlearner_binary_dual <- function(feat_data,
     left_join(measurements, by = c("country", "lineage")) %>%
     na.omit()
   
-  train_df <- model_df %>% dplyr::select(-country, -lineage)
-  X <- train_df %>% dplyr::select(-peak_share, -peak_share_logit, -peak_share_cat)
+  train_idx <- caret::createDataPartition(
+    model_df$peak_share_cat,
+    p = train_fraction,
+    list = FALSE
+  ) %>%
+    as.integer()
+  test_idx <- setdiff(seq_len(nrow(model_df)), train_idx)
+  
+  train_model_df <- model_df[train_idx, , drop = FALSE]
+  test_model_df  <- model_df[test_idx, , drop = FALSE]
+  
+  train_df <- train_model_df %>% dplyr::select(-country, -lineage)
+  test_df  <- test_model_df %>% dplyr::select(-country, -lineage)
+  X_train <- train_df %>% dplyr::select(-peak_share, -peak_share_logit, -peak_share_cat)
+  X_test  <- test_df %>% dplyr::select(-peak_share, -peak_share_logit, -peak_share_cat)
   
   # ---------------- Binary 1: "<0.10" vs ">0.10" ----------------
   Y1 <- ifelse(train_df$peak_share_cat == "<0.10", 0, 1)
+  Y1_test <- ifelse(test_df$peak_share_cat == "<0.10", 0, 1)
   sl_fit1 <- SuperLearner(
     Y = Y1,
-    X = X,
+    X = X_train,
     SL.library = learners,
     family = binomial(),
     cvControl = list(V = 5)
   )
-  pred_prob1 <- sl_fit1$SL.predict
+  pred_prob1 <- as.numeric(predict(sl_fit1, newdata = X_test, onlySL = TRUE)$pred)
   pred_class1 <- ifelse(pred_prob1 > cutoff, 1, 0)
   
   conf1 <- confusionMatrix(factor(pred_class1, levels = c(0, 1)),
-                           factor(Y1, levels = c(0, 1)))
+                           factor(Y1_test, levels = c(0, 1)))
   acc1 <- conf1$overall["Accuracy"]
   f1_1 <- conf1$byClass["F1"]
   
-  result_df1 <- model_df %>%
+  result_df1 <- test_model_df %>%
     dplyr::mutate(
-      binary1_true = ifelse(Y1 == 1, ">0.10", "<0.10"),
+      binary1_true = ifelse(Y1_test == 1, ">0.10", "<0.10"),
       binary1_pred = ifelse(pred_class1 == 1, ">0.10", "<0.10"),
       binary1_pred_prob = pred_prob1
     ) %>%
@@ -120,24 +135,25 @@ run_superlearner_binary_dual <- function(feat_data,
   
   # ---------------- Binary 2: "<0.20" vs ">0.20" ----------------
   Y2 <- ifelse(train_df$peak_share_cat == ">0.20", 1, 0)
+  Y2_test <- ifelse(test_df$peak_share_cat == ">0.20", 1, 0)
   sl_fit2 <- SuperLearner(
     Y = Y2,
-    X = X,
+    X = X_train,
     SL.library = learners,
     family = binomial(),
     cvControl = list(V = 5)
   )
-  pred_prob2 <- sl_fit2$SL.predict
+  pred_prob2 <- as.numeric(predict(sl_fit2, newdata = X_test, onlySL = TRUE)$pred)
   pred_class2 <- ifelse(pred_prob2 > cutoff, 1, 0)
   
   conf2 <- confusionMatrix(factor(pred_class2, levels = c(0, 1)),
-                           factor(Y2, levels = c(0, 1)))
+                           factor(Y2_test, levels = c(0, 1)))
   acc2 <- conf2$overall["Accuracy"]
   f1_2 <- conf2$byClass["F1"]
   
-  result_df2 <- model_df %>%
+  result_df2 <- test_model_df %>%
     dplyr::mutate(
-      binary2_true = ifelse(Y2 == 1, ">0.20", "<0.20"),
+      binary2_true = ifelse(Y2_test == 1, ">0.20", "<0.20"),
       binary2_pred = ifelse(pred_class2 == 1, ">0.20", "<0.20"),
       binary2_pred_prob = pred_prob2
     ) %>%
@@ -147,7 +163,7 @@ run_superlearner_binary_dual <- function(feat_data,
   final_df <- result_df1 %>%
     left_join(result_df2, by = c("country", "lineage")) %>%
     mutate(
-      true_peak_share_cat = model_df$peak_share_cat,
+      true_peak_share_cat = test_model_df$peak_share_cat,
       predicted_peak_share_cat = case_when(
         binary1_pred == "<0.10" ~ "<0.10",
         binary1_pred == ">0.10" & binary2_pred == "<0.20" ~ "0.10–0.20",
@@ -171,6 +187,9 @@ run_superlearner_binary_dual <- function(feat_data,
   list(
     sl_fit_binary1 = sl_fit1,
     sl_fit_binary2 = sl_fit2,
+    train_index = train_idx,
+    test_index = test_idx,
+    train_fraction = train_fraction,
     accuracy = c(binary1 = acc1, binary2 = acc2, final = final_acc),
     F1 = c(binary1 = f1_1, binary2 = f1_2, final = final_f1),
     result_df1 = result_df1,
@@ -196,25 +215,25 @@ learner_combos <- list(
                  "SL.randomForest", "SL.xgboost")
 )
 
-# results_list <- list()
-# 
-# # ------------------- Loop -------------------
-# for (fname in feature_sets) {
-#   for (mname in names(learner_combos)) {
-#     cat("Running SuperLearner for:", fname, "-", mname, "\n")
-# 
-#     res <- run_superlearner_binary_dual(
-#       feat_data = feat_list[[fname]],
-#       measurements = measurements,
-#       learners = learner_combos[[mname]],
-#       seed = 2025
-#     )
-# 
-#     results_list[[paste(fname, mname, sep = "_")]] <- res
-#   }
-# }
-# 
-# saveRDS(results_list, "code2/peak_results_1117.rds")
+results_list <- list()
+
+# ------------------- Loop -------------------
+for (fname in feature_sets) {
+  for (mname in names(learner_combos)) {
+    cat("Running SuperLearner for:", fname, "-", mname, "\n")
+
+    res <- run_superlearner_binary_dual(
+      feat_data = feat_list[[fname]],
+      measurements = measurements,
+      learners = learner_combos[[mname]],
+      seed = 2025
+    )
+
+    results_list[[paste(fname, mname, sep = "_")]] <- res
+  }
+}
+
+saveRDS(results_list, "code2/peak_results_1117.rds")
 
 
 
