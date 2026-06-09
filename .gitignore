@@ -58,6 +58,7 @@ code/py_data/
 YJ/
 reference/
 manuscript/
+PNAS/
 
 # Specific result files kept locally but not tracked on GitHub
 result/FlowChart_0914.pptx
