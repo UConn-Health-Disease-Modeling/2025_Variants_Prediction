@@ -10,7 +10,7 @@ library(zoo)
 
 source("reference/reference code/growth_rate_function_original.R")
 source("reference/reference code/functions_0706.R")
-source("code/funtions_data_io.R")
+source("code2/funtions_data_io.R")
 
 # load the raw data
 url <- "reference/UKHSA-UConn-variant-modelling/variant_modelling/data/summary_GISAID_20240918.csv"

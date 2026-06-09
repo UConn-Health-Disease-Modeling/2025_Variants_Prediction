@@ -308,19 +308,42 @@ heat_data <- country_acc %>%
   mutate(model = model_name_map[model]) %>%
   mutate(model = factor(model, levels = order_models))
 
-ggplot(heat_data, aes(x = model, y = reorder(country, desc(country)), fill = accuracy)) +
-  geom_tile(color = "white") +
-  geom_text(aes(label = sprintf("%.2f", accuracy)), size = 3, color = "black") +
+ggplot(
+  heat_data_sim,
+  aes(x = model, y = reorder(country, desc(country)), fill = accuracy_sim)
+) +
+  geom_tile(color = "grey90", linewidth = 0.25) +
+  geom_text(aes(label = sprintf("%.2f", accuracy_sim)),
+            size = 2.8, color = "black") +
   scale_fill_gradientn(
-    colors = c("#dceaf2", "#9dc3e6", "#6baed6", "#3182bd", "#08519c"), 
+    colors = c("#f7fbff", "#deebf7", "#9ecae1", "#3182bd", "#08519c"),
     limits = c(0.4, 1.0),
-    oob = squish
+    oob = scales::squish,
+    breaks = c(0.4, 0.6, 0.8, 1.0),
+    labels = scales::number_format(accuracy = 0.01)
   ) +
-  labs(title = "", fill = "Accuracy") +
-  theme_minimal(base_size = 13) +
+  labs(x = "Model", y = "Country", fill = "Accuracy") +
+  theme_classic(base_size = 11) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    axis.title = element_blank(),
-    panel.grid = element_blank(),
-    plot.title = element_text(face = "bold", size = 14, hjust = 0.5)
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    axis.text.y = element_text(size = 9),
+    axis.title.x = element_text(size = 11, margin = ggplot2::margin(t = 6)),
+    axis.title.y = element_text(size = 11, margin = ggplot2::margin(r = 6)),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9),
+    legend.key.height = grid::unit(4, "mm"),
+    legend.key.width  = grid::unit(4, "mm"),
+    legend.position = "right",
+    plot.margin = ggplot2::margin(6, 6, 6, 6),
+    panel.grid = element_blank()
   )
+
+ggsave(
+  filename = "PNAS/figs/peak_acc_heatmap.tiff",
+  plot = last_plot(),
+  width = 8.0,
+  height = 5.5,
+  units = "in",
+  dpi = 600,
+  compression = "lzw"
+)

@@ -685,12 +685,26 @@ plot_variant_stack_smoothed <- function(sample_data,
       breaks = legend_breaks,
       guide  = if (is.null(legend_breaks)) "none" else ggplot2::guide_legend(ncol = legend_ncol, title = legend_title)
     ) +
-    ggplot2::labs(title = cty, x = "", y = "Domestic Share") +
-    ggplot2::theme_bw(base_size = 12) +
+    ggplot2::labs(title = cty, x = NULL, y = "Domestic share") +
+    ggplot2::theme_classic(base_size = 11) +
     ggplot2::theme(
+      panel.grid.major = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),
+      axis.line        = ggplot2::element_line(linewidth = 0.4, color = "black"),
+      axis.ticks       = ggplot2::element_line(linewidth = 0.3, color = "black"),
+      axis.ticks.length= grid::unit(2, "mm"),
+      axis.text.x      = ggplot2::element_text(size = 9, color = "black", hjust = 0.5),
+      axis.text.y      = ggplot2::element_text(size = 9, color = "black"),
+      axis.title.y     = ggplot2::element_text(size = 10, color = "black",
+                                               margin = ggplot2::margin(r = 6)),
+      plot.title       = ggplot2::element_text(size = 11, color = "black", hjust = 0, vjust = 1),
       legend.position  = if (is.null(legend_breaks)) "none" else "right",
-      axis.text.x      = ggplot2::element_text(angle = 30, hjust = 1)
+      legend.title     = ggplot2::element_text(size = 10, color = "black"),
+      legend.text      = ggplot2::element_text(size = 9, color = "black"),
+      legend.key.height= grid::unit(4, "mm"),
+      legend.key.width = grid::unit(4, "mm"),
+      legend.box.margin= ggplot2::margin(0, 0, 0, 6),
+      plot.margin      = ggplot2::margin(6, 6, 6, 6)
     )
 }
 

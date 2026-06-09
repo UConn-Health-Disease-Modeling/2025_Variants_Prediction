@@ -6,13 +6,13 @@ if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load(dplyr, ggplot2, lubridate, patchwork, purrr, randomcoloR, tidyr, zoo)
 
 
-source("code/funtions_data_io.R")
-source("code/classify_lineage.R")
+source("code2/funtions_data_io.R")
+source("code2/classify_lineage.R")
 
 # Load alias list for lineage classification
 source("reference/reference code/functions_0706.R")
 alias_map <- get_alias()
-data3 <- readRDS("code/data3_and_dropped.rds")[["data3"]]
+data3 <- readRDS("code2/data3_and_dropped.rds")[["data3"]]
 
 classified_data <- process_classified_variants(
   data = data3,
@@ -28,8 +28,7 @@ classified_data <- classified_data %>%
 
 
 
-# classified_data <- readRDS("code/all_data.rds")[["classified_data"]]
-
+classified_data <- readRDS("code2/all_data.rds")[["classified_data"]]
 # Count the number of variants for each country
 classified_data %>%
   dplyr::distinct(country, lineage) %>%
@@ -224,7 +223,8 @@ measurements <- span_stats %>%
 
 # measurements$days_above_10_cat %>% table()
 
-# save the plots
+# save the plots (TIFF, 600 dpi, LZW) — paths unchanged
+
 first_three <- c("United States","United Kingdom","South Korea")
 
 countries <- classified_data %>%
@@ -245,7 +245,8 @@ mk_legends <- function(cntries) {
     unique(c(labs, "others"))
   }), cntries)
 }
-seed = 6
+
+seed <- 6
 out_dir <- "result/plots"
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
@@ -258,15 +259,22 @@ res_first <- build_variant_panels(
   legends_list = mk_legends(first_three),
   seed         = seed
 )
+
 res_first$plot_combined
+
 ggplot2::ggsave(
-  filename = file.path(out_dir, "variant_stack_3x1(1).png"),
-  plot     = res_first$plot_combined,
-  width    = 14, height = 9, dpi = 300
+  filename    = file.path(out_dir, "variant_stack_3x1(1).tiff"),
+  plot        = res_first$plot_combined,
+  width       = 12,
+  height      = 8,
+  units       = "in",
+  dpi         = 600,
+  compression = "lzw"
 )
 
 remaining <- setdiff(countries, first_three)
 chunks <- split(remaining, ceiling(seq_along(remaining) / 3))
+
 for (i in seq_along(chunks)) {
   trio <- chunks[[i]]
   res_i <- build_variant_panels(
@@ -278,8 +286,18 @@ for (i in seq_along(chunks)) {
     legends_list = mk_legends(trio),
     seed         = seed
   )
-  fn <- file.path(out_dir, sprintf("variant_stack_3x1(%d).png", i + 1))
-  ggplot2::ggsave(filename = fn, plot = res_i$plot_combined, width = 14, height = 9, dpi = 300)
+  
+  fn <- file.path(out_dir, sprintf("variant_stack_3x1(%d).tiff", i + 1))
+  
+  ggplot2::ggsave(
+    filename    = fn,
+    plot        = res_i$plot_combined,
+    width       = 14,
+    height      = 9,
+    units       = "in",
+    dpi         = 600,
+    compression = "lzw"
+  )
 }
 
 # # save the data
