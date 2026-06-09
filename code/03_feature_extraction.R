@@ -6,9 +6,9 @@
 rm(list = ls())
 library(dplyr)
 library(stringr)
-source("code2/funtions_data_io.R")   # defines prepare_model_data(), extract_features_from_model_data()
+source("code/functions_data_io.R")   # defines prepare_model_data(), extract_features_from_model_data()
 
-all_data       <- readRDS("code2/all_data.rds")
+all_data       <- readRDS("code/all_data.rds")
 
 measurements    <- all_data$measurements
 classified_data <- all_data$classified_data %>% 
@@ -167,7 +167,7 @@ feat_list <- lapply(c(14, 21, 28, 35), function(d) {
   extract_features_from_model_data(res_list[[paste0("input_", d)]]$X, add_auto_features = TRUE)
 })
 names(feat_list) <- paste0("feat_", c(14, 21, 28, 35))
-# saveRDS(feat_list, file = "code2/feat_list.rds")
+# saveRDS(feat_list, file = "code/feat_list.rds")
 
 # feat_list$feat_14 %>% dim()
 # feat_list$feat_21 %>% dim()

@@ -11,6 +11,6 @@ This folder contains the analysis scripts for the COVID-19 variant prediction pr
 - `SHAP_Analysis.ipynb`: generate SHAP-based feature importance plots for selected models.
 - `classify_lineage.R`: helper code for assigning or grouping lineages.
 - `functions_ml_utils.R`: shared machine-learning utility functions.
-- `funtions_data_io.R`: shared data input/output helper functions.
+- `functions_data_io.R`: shared data input/output helper functions.
 
 Local intermediate files such as `.rds` objects and `py_data/` are ignored by Git and are not required to browse the source code.

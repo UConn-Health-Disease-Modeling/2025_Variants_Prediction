@@ -1,9 +1,9 @@
 rm(list = ls())
 library(dplyr)
 
-res_peak     <- readRDS("code2/peak_results_1117.rds")$feat_35_ensemble$final_df
-res_dur      <- readRDS("code2/duration_results_1117.rds")$feat_35_ensemble$final_df
-all_data     <- readRDS("code2/all_data.rds")
+res_peak     <- readRDS("code/peak_results_1117.rds")$feat_35_ensemble$final_df
+res_dur      <- readRDS("code/duration_results_1117.rds")$feat_35_ensemble$final_df
+all_data     <- readRDS("code/all_data.rds")
 measurements      <- all_data$measurements
 measurements$peak_share_cat <- cut(
   measurements$peak_share,

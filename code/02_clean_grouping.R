@@ -6,13 +6,13 @@ if (!requireNamespace("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load(dplyr, ggplot2, lubridate, patchwork, purrr, randomcoloR, tidyr, zoo)
 
 
-source("code2/funtions_data_io.R")
-source("code2/classify_lineage.R")
+source("code/functions_data_io.R")
+source("code/classify_lineage.R")
 
 # Load alias list for lineage classification
 source("reference/reference code/functions_0706.R")
 alias_map <- get_alias()
-data3 <- readRDS("code2/data3_and_dropped.rds")[["data3"]]
+data3 <- readRDS("code/data3_and_dropped.rds")[["data3"]]
 
 classified_data <- process_classified_variants(
   data = data3,
@@ -28,7 +28,7 @@ classified_data <- classified_data %>%
 
 
 
-classified_data <- readRDS("code2/all_data.rds")[["classified_data"]]
+classified_data <- readRDS("code/all_data.rds")[["classified_data"]]
 # Count the number of variants for each country
 classified_data %>%
   dplyr::distinct(country, lineage) %>%
