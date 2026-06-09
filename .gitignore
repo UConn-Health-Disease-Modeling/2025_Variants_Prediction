@@ -48,11 +48,11 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 Archive/code/*.rds
-code2/*.rds
+code/*.rds
 *.rds
 Archive/
 result/Archive
-code2/py_data/
+code/py_data/
 
 # Folders kept locally but not tracked on GitHub
 YJ/
