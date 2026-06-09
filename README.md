@@ -64,4 +64,5 @@ The `data/` folder contains summary datasets used by the analysis. Raw genomic d
 ## Contact
 
 Yifan (Franky) Zhang  
-University of Connecticut, Department of Statistics
+University of Connecticut, Department of Statistics  
+zfranky6@uconn.edu
