@@ -61,6 +61,7 @@ manuscript/
 PNAS/
 
 # Specific result files kept locally but not tracked on GitHub
+result/plots/
 result/FlowChart_0914.pptx
 result/Result_Table.xlsx
 result/Tables_0830.xlsx
