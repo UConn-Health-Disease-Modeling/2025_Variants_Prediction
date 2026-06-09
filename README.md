@@ -41,6 +41,12 @@ Rscript code/05_joint_comparison_table.R
 
 `SHAP_Analysis.ipynb` generates SHAP feature-importance figures and saves them to `result/figs/`.
 
+## Reproducibility Notes
+
+The scripts read and write intermediate `.rds` objects under `code/`. These files are ignored by Git, so a fresh clone should regenerate them by running the pipeline in order.
+
+High-resolution paper figures are tracked in `result/figs/`. Some TIFF files are large because they are publication-resolution outputs.
+
 ## Outputs
 
 Tracked figures are stored in:
@@ -49,7 +55,7 @@ Tracked figures are stored in:
 result/figs/
 ```
 
-Local intermediate outputs such as `.rds` files, `code/py_data/`, `result/plots/`, `result/plots2/`, manuscripts, references, and PNAS submission files are ignored by Git.
+Local intermediate outputs such as `.rds` files, `code/py_data/`, `result/plots/`, `result/plots2/`, manuscripts, references, PNAS submission files, and macOS `.DS_Store` files are ignored by Git.
 
 ## Data
 

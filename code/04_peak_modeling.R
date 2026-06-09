@@ -55,8 +55,8 @@ suppressPackageStartupMessages({
   library(rpart)
 })
 
-feat_list    <- readRDS("code2/feat_list.rds")
-measurements <- readRDS("code2/all_data.rds")[["measurements"]] %>%
+feat_list    <- readRDS("code/feat_list.rds")
+measurements <- readRDS("code/all_data.rds")[["measurements"]] %>%
   dplyr::select(country, lineage, peak_share, peak_share_logit)
 
 measurements$peak_share_cat <- cut(
@@ -66,8 +66,8 @@ measurements$peak_share_cat <- cut(
   right = TRUE
 )
 
-# write.csv(feat_list$feat_28, "code2/py_data/peak_feat_28.csv", row.names = FALSE)
-# write.csv(measurements, "code2/py_data/peak_measurements.csv", row.names = FALSE)
+# write.csv(feat_list$feat_28, "code/py_data/peak_feat_28.csv", row.names = FALSE)
+# write.csv(measurements, "code/py_data/peak_measurements.csv", row.names = FALSE)
 
 
 
@@ -233,7 +233,7 @@ for (fname in feature_sets) {
   }
 }
 
-saveRDS(results_list, "code2/peak_results_1117.rds")
+saveRDS(results_list, "code/peak_results_1117.rds")
 
 
 
@@ -244,7 +244,7 @@ saveRDS(results_list, "code2/peak_results_1117.rds")
 
 
 
-results_list <- readRDS("code2/peak_results_1117.rds")
+results_list <- readRDS("code/peak_results_1117.rds")
 summary_df <- data.frame(
   feature_set = sub("^(feat_\\d+)_.*", "\\1", names(results_list)),
   model = sub("^feat_\\d+_(.*)$", "\\1", names(results_list)),
