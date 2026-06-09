@@ -58,7 +58,8 @@ code/py_data/
 
 # Folders kept locally but not tracked on GitHub
 YJ/
-reference/
+reference/*
+!reference/ref.bib
 manuscript/
 PNAS/
 
