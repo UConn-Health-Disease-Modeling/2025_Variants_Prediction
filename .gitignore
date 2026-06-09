@@ -57,3 +57,9 @@ code2/py_data/
 # Folders kept locally but not tracked on GitHub
 YJ/
 reference/
+manuscript/
+
+# Specific result files kept locally but not tracked on GitHub
+result/FlowChart_0914.pptx
+result/Result_Table.xlsx
+result/Tables_0830.xlsx
