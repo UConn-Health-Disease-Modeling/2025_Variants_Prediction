@@ -247,7 +247,7 @@ mk_legends <- function(cntries) {
 }
 
 seed <- 6
-out_dir <- "result/plots"
+out_dir <- "result/figs"
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
 res_first <- build_variant_panels(
