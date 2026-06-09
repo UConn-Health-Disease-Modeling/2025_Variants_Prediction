@@ -53,3 +53,7 @@ code2/*.rds
 Archive/
 result/Archive
 code2/py_data/
+
+# Folders kept locally but not tracked on GitHub
+YJ/
+reference/
