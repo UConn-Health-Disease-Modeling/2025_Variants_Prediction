@@ -32,25 +32,25 @@ The 03 output contains only these seven core columns:
 `country`, `date`, `variant`, `who_variant`, `denominator`, `numerator`, and
 `share`.
 
-## WHO classes and approximate dates
+## WHO classes and variant start dates
 
-Step 03 retains the 10 WHO classes shown below. Each date range runs from the
-earliest first qualifying window to the latest qualifying-window end across
-countries. These are approximate dataset ranges, not official WHO designation
-dates.
+Step 03 retains the 10 WHO classes shown below. For each unique Pango variant,
+its start date is the earliest date across countries on which its retained time
+series begins—that is, the first day of its first qualifying seven-day window.
+These are dataset-derived dates, not official WHO designation dates.
 
-| WHO class | Pango root(s) | Approximate dates in these data |
-|---|---|---|
-| Alpha | B.1.1.7 | 2020-11-08 to 2021-09-03 |
-| Beta | B.1.351 | 2021-01-18 to 2021-07-28 |
-| Gamma | P.1 / B.1.1.28.1 | 2021-02-05 to 2021-07-29 |
-| Delta | B.1.617.2 | 2021-04-12 to 2022-01-28 |
-| Epsilon | B.1.427 and B.1.429 | 2020-11-28 to 2021-05-19 |
-| Eta | B.1.525 | 2021-02-15 to 2021-05-08 |
-| Iota | B.1.526 | 2021-01-25 to 2021-06-29 |
-| Kappa | B.1.617.1 | 2021-03-22 to 2021-04-10 |
-| Mu | B.1.621 | 2021-04-25 to 2021-07-23 |
-| Omicron | B.1.1.529 and descendants | 2021-12-01 to 2024-09-09 |
+| WHO class | Variant count | Earliest start | Median start | Latest start |
+|---|---:|---|---|---|
+| Alpha | 1 | 2020-11-08 | 2020-11-08 | 2020-11-08 |
+| Epsilon | 2 | 2020-11-28 | 2020-12-03 | 2020-12-09 |
+| Beta | 3 | 2021-01-18 | 2021-02-22 | 2021-06-19 |
+| Iota | 1 | 2021-01-25 | 2021-01-25 | 2021-01-25 |
+| Gamma | 6 | 2021-02-05 | 2021-03-11 | 2021-05-24 |
+| Eta | 1 | 2021-02-15 | 2021-02-15 | 2021-02-15 |
+| Kappa | 1 | 2021-03-22 | 2021-03-22 | 2021-03-22 |
+| Delta | 95 | 2021-04-12 | 2021-07-06 | 2021-11-29 |
+| Mu | 1 | 2021-04-25 | 2021-04-25 | 2021-04-25 |
+| Omicron | 455 | 2021-12-01 | 2023-01-24 | 2024-08-11 |
 
 ## Counting definitions
 
