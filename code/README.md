@@ -61,11 +61,11 @@ started exactly on 5 May 2023.
 
 ## 04 feature and response extraction
 
-`04_extract_features.R` reads `variants_who2.rds` and creates 14- and 21-day
-feature sets. A country–variant pair is excluded only when its calendar span
-from the first to last retained date is shorter than the input window, or its
-maximum share is strictly greater than 50% within that window. Missing dates
-inside an otherwise long-enough window are filled with `share = 0`.
+`04_extract_features.R` reads `variants_who2.rds` and creates 14-, 21-, and
+28-day feature sets. A country–variant pair is excluded only when its calendar
+span from the first to last retained date is shorter than the input window, or
+its maximum share is strictly greater than 50% within that window. Missing
+dates inside an otherwise long-enough window are filled with `share = 0`.
 
 Each feature table has 30 columns: `country`, `lineage`, six handcrafted
 features, and 22 catch22 features. The output is saved as `feat_who2.rds`.
@@ -74,28 +74,30 @@ features, and 22 catch22 features. The output is saved as `feat_who2.rds`.
 |---|---:|---:|---:|---:|
 | `feat_14` | 1,740 | 565 | 1 | 12 |
 | `feat_21` | 1,729 | 563 | 8 | 16 |
+| `feat_28` | 1,719 | 561 | 13 | 21 |
 
-The same script saves `response_who2.rds`, containing `response_14` and
-`response_21`. Each response table is keyed identically to its feature table
-and contains the continuous and categorical versions of two outcomes:
+The same script saves `response_who2.rds`, containing `response_14`,
+`response_21`, and `response_28`. Each response table is keyed identically to
+its feature table and contains the continuous and categorical versions of two
+outcomes:
 
 - **Duration:** inclusive number of days from the retained start date through
   the end of the latest run with at least seven consecutive calendar days at
   `share > 1%`.
 - **Growth:** overall peak share in the complete retained trajectory minus the
-  peak share within the corresponding 14- or 21-day input window.
+  peak share within the corresponding 14-, 21-, or 28-day input window.
 
 The categorical cut points are prespecified, study-defined thresholds rather
 than official WHO or CDC classifications:
 
-| Outcome | Category | Definition | `response_14` | `response_21` |
-|---|---|---|---:|---:|
-| Duration | Short | `<30` days | 460 (26.4%) | 451 (26.1%) |
-| Duration | Medium | `30–90` days | 641 (36.8%) | 640 (37.0%) |
-| Duration | Long | `>90` days | 639 (36.7%) | 638 (36.9%) |
-| Growth | Minimal | `≤1` percentage point | 606 (34.8%) | 755 (43.7%) |
-| Growth | Moderate | `>1–5` percentage points | 464 (26.7%) | 403 (23.3%) |
-| Growth | Large | `>5` percentage points | 670 (38.5%) | 571 (33.0%) |
+| Outcome | Category | Definition | `response_14` | `response_21` | `response_28` |
+|---|---|---|---:|---:|---:|
+| Duration | Short | `<30` days | 460 (26.4%) | 451 (26.1%) | 446 (25.9%) |
+| Duration | Medium | `30–90` days | 641 (36.8%) | 640 (37.0%) | 638 (37.1%) |
+| Duration | Long | `>90` days | 639 (36.7%) | 638 (36.9%) | 635 (36.9%) |
+| Growth | Minimal | `≤1` percentage point | 606 (34.8%) | 755 (43.7%) | 859 (50.0%) |
+| Growth | Moderate | `>1–5` percentage points | 464 (26.7%) | 403 (23.3%) | 357 (20.8%) |
+| Growth | Large | `>5` percentage points | 670 (38.5%) | 571 (33.0%) | 503 (29.3%) |
 
 The response tables retain the underlying continuous `duration` and `growth`
 columns for sensitivity analyses. The categorical columns are stored as
