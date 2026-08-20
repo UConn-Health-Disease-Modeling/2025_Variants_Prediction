@@ -39,18 +39,23 @@ its start date is the earliest date across countries on which its retained time
 series begins—that is, the first day of its first qualifying seven-day window.
 These are dataset-derived dates, not official WHO designation dates.
 
-| WHO class | Variant count | Earliest start | Median start | Latest start |
-|---|---:|---|---|---|
-| Alpha | 1 | 2020-11-08 | 2020-11-08 | 2020-11-08 |
-| Epsilon | 2 | 2020-11-28 | 2020-12-03 | 2020-12-09 |
-| Beta | 3 | 2021-01-18 | 2021-02-22 | 2021-06-19 |
-| Iota | 1 | 2021-01-25 | 2021-01-25 | 2021-01-25 |
-| Gamma | 6 | 2021-02-05 | 2021-03-11 | 2021-05-24 |
-| Eta | 1 | 2021-02-15 | 2021-02-15 | 2021-02-15 |
-| Kappa | 1 | 2021-03-22 | 2021-03-22 | 2021-03-22 |
-| Delta | 95 | 2021-04-12 | 2021-07-06 | 2021-11-29 |
-| Mu | 1 | 2021-04-25 | 2021-04-25 | 2021-04-25 |
-| Omicron | 455 | 2021-12-01 | 2023-01-24 | 2024-08-11 |
+On 5 May 2023, WHO declared that COVID-19 no longer constituted a public health
+emergency of international concern ([PHEIC](https://www.who.int/europe/news/item/05-05-2023-statement-on-the-fifteenth-meeting-of-the-international-health-regulations-%282005%29-emergency-committee-regarding-the-coronavirus-disease-%28covid-19%29-pandemic)).
+In this dataset, 153 variants—all Omicron—started after this date. No variant
+started exactly on 5 May 2023.
+
+| WHO class | Variant count | Earliest start | Median start | Latest start | Started after 2023-05-05 |
+|---|---:|---|---|---|---:|
+| Alpha | 1 | 2020-11-08 | 2020-11-08 | 2020-11-08 | 0 |
+| Epsilon | 2 | 2020-11-28 | 2020-12-03 | 2020-12-09 | 0 |
+| Beta | 3 | 2021-01-18 | 2021-02-22 | 2021-06-19 | 0 |
+| Iota | 1 | 2021-01-25 | 2021-01-25 | 2021-01-25 | 0 |
+| Gamma | 6 | 2021-02-05 | 2021-03-11 | 2021-05-24 | 0 |
+| Eta | 1 | 2021-02-15 | 2021-02-15 | 2021-02-15 | 0 |
+| Kappa | 1 | 2021-03-22 | 2021-03-22 | 2021-03-22 | 0 |
+| Delta | 95 | 2021-04-12 | 2021-07-06 | 2021-11-29 | 0 |
+| Mu | 1 | 2021-04-25 | 2021-04-25 | 2021-04-25 | 0 |
+| Omicron | 455 | 2021-12-01 | 2023-01-24 | 2024-08-11 | 153 |
 
 ## Counting definitions
 
