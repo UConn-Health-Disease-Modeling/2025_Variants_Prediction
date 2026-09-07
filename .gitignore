@@ -22,6 +22,10 @@
 # RStudio files
 .Rproj.user/
 *.Rproj
+.venv/
+.venv-modeling/
+__pycache__/
+*.py[cod]
 
 # produced vignettes
 vignettes/*.html
@@ -51,9 +55,12 @@ po/*~
 rsconnect/
 Archive/code/*.rds
 code/*.rds
+code/modeling_results/
+code/*.pdf
 *.rds
 Archive/
 result/Archive
+result/02_group_variants/
 code/py_data/
 
 # Folders kept locally but not tracked on GitHub
@@ -62,6 +69,13 @@ reference/*
 !reference/ref.bib
 manuscript/
 PNAS/
+
+# Local manuscript and analysis-review files
+/*.docx
+/*.tex
+/.codex_tmp_*/
+/tmp/
+/outputs/
 
 # Specific result files kept locally but not tracked on GitHub
 result/plots/
