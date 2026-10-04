@@ -190,7 +190,7 @@ def generate_candidate_windows(outcome: str) -> None:
             1.06,
             label,
             transform=axis.transAxes,
-            fontsize=13,
+            fontsize=22,
             fontweight="bold",
             va="top",
         )
@@ -203,12 +203,12 @@ def generate_candidate_windows(outcome: str) -> None:
         plt.rcParams.update(
             {
                 "font.family": "DejaVu Sans",
-                "font.size": 10,
-                "axes.titlesize": 12,
-                "axes.labelsize": 10.5,
-                "legend.fontsize": 9,
-                "xtick.labelsize": 9.5,
-                "ytick.labelsize": 9.5,
+                "font.size": 16,
+                "axes.titlesize": 19,
+                "axes.labelsize": 17,
+                "legend.fontsize": 14.5,
+                "xtick.labelsize": 15,
+                "ytick.labelsize": 15,
             }
         )
         figure, axes = plt.subplots(2, 2, figsize=(15, 11), constrained_layout=True)
@@ -288,7 +288,7 @@ def generate_candidate_windows(outcome: str) -> None:
             0.04,
             f"Dashed prevalence baselines: {prevalence_text}",
             transform=pr_axis.transAxes,
-            fontsize=8.8,
+            fontsize=13.5,
             va="bottom",
             bbox={"facecolor": "white", "edgecolor": "#BFBFBF", "alpha": 0.88, "pad": 4},
         )
